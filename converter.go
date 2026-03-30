@@ -95,14 +95,21 @@ func splitAtTables(doc ast.Node, source []byte) []segment {
 	var runStart, runEnd int
 	runActive := false
 
+	appendSegment := func(start, end int, isTable bool) {
+		if start >= end {
+			return
+		}
+		raw := strings.TrimRight(string(source[start:end]), "\n")
+		if raw != "" {
+			segments = append(segments, segment{text: raw, isTable: isTable})
+		}
+	}
+
 	flushRun := func() {
 		if !runActive {
 			return
 		}
-		raw := strings.TrimRight(string(source[runStart:runEnd]), "\n")
-		if raw != "" {
-			segments = append(segments, segment{text: raw})
-		}
+		appendSegment(runStart, runEnd, false)
 		runActive = false
 	}
 
@@ -116,10 +123,7 @@ func splitAtTables(doc ast.Node, source []byte) []segment {
 
 		if n.Kind() == east.KindTable {
 			flushRun()
-			raw := strings.TrimRight(string(source[start:end]), "\n")
-			if raw != "" {
-				segments = append(segments, segment{text: raw, isTable: true})
-			}
+			appendSegment(start, end, true)
 		} else {
 			if !runActive {
 				runStart = start
