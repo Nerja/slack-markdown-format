@@ -1,9 +1,9 @@
 module github.com/Nerja/slack-markdown-format
 
-go 1.24.0
+go 1.25
 
 require (
-	github.com/slack-go/slack v0.18.0-rc2
+	github.com/slack-go/slack v0.20.0
 	github.com/yuin/goldmark v1.7.16
 )
 
